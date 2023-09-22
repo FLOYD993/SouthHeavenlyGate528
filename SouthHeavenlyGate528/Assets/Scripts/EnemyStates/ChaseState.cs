@@ -15,19 +15,23 @@ public class ChaseState : IState
     }
     public void OnEnter()
     {
-        Debug.Log("Chase Start");
-        parameter.animator.Play("EnemyRunning");
+        parameter.animator.Play("EnemyMoving");
     }
     public void OnUpdate()
     {
-
-        Debug.Log(parameter.target);
         manager.FlipTo(parameter.target);
+
+        if (manager.parameter.getHit)
+        {
+            manager.TransitionState(StateType.Hit);
+        }
+
         if (parameter.target)
         {
+            Debug.Log("Target Position:" + parameter.target.position + "\n Present Position" + manager.transform.position);
             manager.transform.position = Vector3.MoveTowards(manager.transform.position,
-                                                        parameter.target.position,
-                                                        parameter.chaseSpeed * Time.deltaTime);
+                                                             new Vector3(parameter.target.position.x, 0, 0),
+                                                             parameter.chaseSpeed * Time.deltaTime);
         }
 
         if (parameter.target == null ||
@@ -39,22 +43,24 @@ public class ChaseState : IState
 
         Collider[] colliders = Physics.OverlapSphere(parameter.attackPoint.position, parameter.attackArea, parameter.targetLayer);
 
-        if (colliders.Length != 0)
+        // Debug.Log(colliders.Length);
+
+        foreach (Collider collider in colliders)
         {
-            foreach (Collider collider in colliders)
+            if (collider.CompareTag("Player"))
             {
-                if (collider.CompareTag("Player"))
-                {
-                    Debug.Log("count");
-                    manager.TransitionState(StateType.Attack);
-                    break;
-                }
+                Debug.Log(collider.tag);
+                manager.TransitionState(StateType.Attack);
+
+                // break;
             }
+
+
         }
     }
 
     public void OnExit()
     {
-
+        parameter.animator.StopPlayback();
     }
 }

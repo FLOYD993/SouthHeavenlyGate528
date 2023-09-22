@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using UnityEngine;
 
 public enum StateType
@@ -9,7 +10,9 @@ public enum StateType
     Patrol,
     Chase,
     React,
-    Attack
+    Attack,
+    Hit,
+    Dead
 }
 
 [Serializable]
@@ -30,6 +33,8 @@ public class Parameter
     
     public Animator animator;
 
+    public bool getHit;
+
    
 }
 
@@ -41,6 +46,8 @@ public class FSM : MonoBehaviour
 
     private Dictionary<StateType, IState> states = new Dictionary<StateType, IState>();
 
+    public IState CurrentState { get => currentState; set => currentState = value; }
+
     private void Start()
     {
         states.Add(StateType.Idle, new IdleState(this));
@@ -48,6 +55,9 @@ public class FSM : MonoBehaviour
         states.Add(StateType.Chase, new ChaseState(this));
         states.Add(StateType.React, new ReactState(this));
         states.Add(StateType.Attack, new AttackState(this));
+        states.Add(StateType.Hit, new HitState(this));
+        states.Add(StateType.Dead, new DeadState(this));
+
 
         TransitionState(StateType.Idle);
 
@@ -56,20 +66,29 @@ public class FSM : MonoBehaviour
 
     private void Update()
     {
-        if (currentState != null)
+        if (CurrentState != null)
         {
-            currentState.OnUpdate();
+            CurrentState.OnUpdate();
+        }
+
+        if(Input.GetKeyDown(KeyCode.Return))
+        {
+            parameter.getHit = true;
         }
     }
 
     public void TransitionState(StateType state)
     {
-        if (currentState != null)
+
+
+        if (CurrentState != null)
         {
-            currentState.OnExit();
+            CurrentState.OnExit();
         }
-        currentState = states[state];
-        currentState.OnEnter();
+        CurrentState = states[state];
+        CurrentState.OnEnter();
+
+
     }
 
     public void FlipTo(Transform target)
@@ -91,7 +110,6 @@ public class FSM : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name);
         if(other.CompareTag("Player"))
         {
             parameter.target = other.transform;
@@ -111,4 +129,15 @@ public class FSM : MonoBehaviour
     {
         Gizmos.DrawWireSphere(parameter.attackPoint.position, parameter.attackArea);
     }
+
+    public void Fade()
+    {
+        Destroy(transform.parent.gameObject, 5.0F) ;
+    }
 }
+
+
+
+
+
+

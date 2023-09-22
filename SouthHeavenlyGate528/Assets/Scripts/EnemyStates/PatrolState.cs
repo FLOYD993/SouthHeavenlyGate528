@@ -17,11 +17,16 @@ public class PatrolState : IState
 
     public void OnEnter()
     {
-        parameter.animator.Play("EnemyRunning");
+        parameter.animator.Play("EnemyMoving");
     }
     public void OnUpdate()
     {
         manager.FlipTo(parameter.patrolPoints[patrolPosition]);
+
+        if (manager.parameter.getHit)
+        {
+            manager.TransitionState(StateType.Hit);
+        }
 
         manager.transform.position = Vector3.MoveTowards(manager.transform.position,
                                                         parameter.patrolPoints[patrolPosition].position,
@@ -47,5 +52,7 @@ public class PatrolState : IState
         {
             patrolPosition = 0;
         }
+
+        parameter.animator.StopPlayback();
     }
 }

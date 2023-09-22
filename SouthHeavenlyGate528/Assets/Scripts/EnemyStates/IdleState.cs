@@ -18,16 +18,19 @@ public class IdleState : IState
 
     public void OnEnter()
     {
-        parameter.animator.Play("EnemtIdle");
+        parameter.animator.Play("EnemyIdle");
     }
     public void OnUpdate()
     {
+        if(manager.parameter.getHit)
+        {
+            manager.TransitionState(StateType.Hit);
+        }
+
         timer += Time.deltaTime;
 
-        // Debug.Log(parameter.target);
-
         if (parameter.target != null &&
-            parameter.target.position.x >= parameter.chasePoints[0].position.x &&
+           parameter.target.position.x >= parameter.chasePoints[0].position.x &&
             parameter.target.position.x <= parameter.chasePoints[1].position.x)
         {
             manager.TransitionState(StateType.React);
@@ -42,5 +45,6 @@ public class IdleState : IState
     public void OnExit()
     {
         timer = 0;
+        parameter.animator.StopPlayback();
     }
 }
