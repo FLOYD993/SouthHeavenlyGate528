@@ -3,7 +3,7 @@
 
 ## 基本信息
 
-作者：Xia ZF、Zhou XL、Li FY、Li YF、Yan Yx、Zhu XM、Chen BY
+作者：Xia ZF、Zhou XL、Li FY、Li YF、Yan YX、Zhu XM、Chen BY
 
 时间：2023年9月15日开始
 
