@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 敌人所有状态
@@ -18,7 +19,7 @@ public enum StateType
     Dead            // 死亡
 }
 
-[Serializable]      // 使该类各参数可以在细节面板中显示
+[Serializable]
 public class Parameter
 {
     public int health;                          // 血量
@@ -28,14 +29,16 @@ public class Parameter
 
     public Transform[] patrolPoints;            // 巡逻范围
     public Transform[] chasePoints;             // 追击范围
-    
+
     public Transform target;                    // 追踪目标
     public LayerMask targetLayer;               // 追踪目标层级，通常为Player
 
     public Transform attackPoint;               // 攻击点（攻击范围圆心）
     public float attackArea;                    // 攻击范围
-    
+
     public Animator animator;                   // 动画控制器
+
+    public RectTransform healthBarPresent;
 
     public bool getHit;                         // 是否收到伤害，用于调试
 }
@@ -47,8 +50,10 @@ public class FSM : MonoBehaviour
     private IState currentState;        // 状态
     public IState CurrentState { get => currentState; set => currentState = value; }
 
+
     private Dictionary<StateType, IState> states = new Dictionary<StateType, IState>();         // 状态集字典，<key: 状态, value: 状态控制>
 
+    private int totalHealth;
 
 
     private void Start()
@@ -67,6 +72,7 @@ public class FSM : MonoBehaviour
 
         // 在外部赋值了，这里不再查找
         // parameter.animator = GetComponent<Animator>();
+        totalHealth = parameter.health;
     }
 
     private void Update()
@@ -103,13 +109,16 @@ public class FSM : MonoBehaviour
         if (target != null)
         {
             // Debug.Log(transform.position.x + "/t" + target.position.x);
-            if(transform.position .x > target.position.x)
+            if (transform.position.x > target.position.x)
             {
                 transform.localScale = new Vector3(-1, 1, 1);
+                parameter.healthBarPresent.parent.transform.localScale = new Vector3(-1, 1, 1);
+
             }
-            else if(transform.position.x < target.position.x)
+            else if (transform.position.x < target.position.x)
             {
                 transform.localScale = new Vector3(1, 1, 1);
+                parameter.healthBarPresent.parent.transform.localScale = new Vector3(1, 1, 1);
             }
         }
     }
@@ -129,8 +138,6 @@ public class FSM : MonoBehaviour
             parameter.target = null;
         }
     }
-
-
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(parameter.attackPoint.position, parameter.attackArea);
@@ -138,7 +145,13 @@ public class FSM : MonoBehaviour
 
     public void Fade()
     {
-        Destroy(transform.parent.gameObject, 5.0F) ;
+        Destroy(transform.parent.gameObject, 5.0F);
+    }
+
+    public void HealthBarUpdate()
+    {
+        Debug.Log(parameter.healthBarPresent.localScale);
+        parameter.healthBarPresent.sizeDelta = new Vector2(1.5F * parameter.health / totalHealth, 0.1F);
     }
 }
 

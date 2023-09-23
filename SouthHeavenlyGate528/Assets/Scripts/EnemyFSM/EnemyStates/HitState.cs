@@ -19,10 +19,11 @@ public class HitState : IState
     {
         parameter.animator.Play("EnemyHit");
         parameter.health -= 1;
+        manager.HealthBarUpdate();
     }
     public void OnUpdate()
     {
-        if (parameter.health < 0)
+        if (parameter.health <= 0)
         {
             manager.TransitionState(StateType.Dead);
         }
@@ -41,7 +42,9 @@ public class HitState : IState
     public void OnExit()
     {
         parameter.animator.StopPlayback();
-        manager.parameter.getHit = false;
+        parameter.getHit = false;
         
     }
+
+
 }

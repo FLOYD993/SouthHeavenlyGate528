@@ -22,7 +22,7 @@ public class IdleState : IState
     }
     public void OnUpdate()
     {
-        if(manager.parameter.getHit)
+        if(parameter.getHit)
         {
             manager.TransitionState(StateType.Hit);
         }

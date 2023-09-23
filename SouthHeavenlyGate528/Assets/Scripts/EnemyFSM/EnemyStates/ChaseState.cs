@@ -28,7 +28,6 @@ public class ChaseState : IState
 
         if (parameter.target)
         {
-            Debug.Log("Target Position:" + parameter.target.position + "\n Present Position" + manager.transform.position);
             manager.transform.position = Vector3.MoveTowards(manager.transform.position,
                                                              new Vector3(parameter.target.position.x, 0, 0),
                                                              parameter.chaseSpeed * Time.deltaTime);

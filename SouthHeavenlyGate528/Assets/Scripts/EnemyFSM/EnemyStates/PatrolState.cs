@@ -23,7 +23,7 @@ public class PatrolState : IState
     {
         manager.FlipTo(parameter.patrolPoints[patrolPosition]);
 
-        if (manager.parameter.getHit)
+        if (parameter.getHit)
         {
             manager.TransitionState(StateType.Hit);
         }
